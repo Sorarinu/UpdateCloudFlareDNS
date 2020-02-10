@@ -14,6 +14,7 @@ if ($publicIP['origin'] === $currentDNSRecord['result'][0]['content']) {
 }
 
 $res = updateDNSRecord($publicIP['origin'], $currentDNSRecord['result'][0]['id']);
+var_dump($res);
 
 function getPublicIP() {
     $client = new Client();
