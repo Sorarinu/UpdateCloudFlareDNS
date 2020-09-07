@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/vendor/autoload.php';
 use GuzzleHttp\Client;
 use Dotenv\Dotenv;
@@ -6,15 +7,33 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+$records = [
+    'sorarinu.dev'   => true,
+    'tv.sorarinu.dev'   => true,
+    'home.sorarinu.dev' => false,
+    'krishna-api.sorarinu.dev' => true,
+    'ldap.sorarinu.dev' => false,
+    'wiki.sorarinu.dev' => true,
+    'grafana.sorarinu.dev' => true,
+    'prometheus.sorarinu.dev' => true,
+];
+
 $publicIP = getPublicIP();
-$currentDNSRecord = getCurrentDNSRecord();
+MyLog::$log->debug('Get Public IP', $publicIP);
 
-if ($publicIP['origin'] === $currentDNSRecord['result'][0]['content']) {
-    return;
+foreach ($records as $record => $isProxy) {
+    $currentDNSRecord = getCurrentDNSRecord($record);
+    MyLog::$log->debug('Get Current DNS Record for ' . $record, $currentDNSRecord);
+    
+    if ($publicIP['origin'] === $currentDNSRecord['result'][0]['content']) {
+        MyLog::$log->debug('No Updates for ' . $record);
+        continue;
+    }
+
+    MyLog::$log->debug('Update Record : ' . $record);
+    
+    $res = updateDNSRecord($publicIP['origin'], $currentDNSRecord['result'][0]['id'], $record, $isProxy);
 }
-
-$res = updateDNSRecord($publicIP['origin'], $currentDNSRecord['result'][0]['id']);
-var_dump($res);
 
 function getPublicIP() {
     $client = new Client();
@@ -24,10 +43,10 @@ function getPublicIP() {
     return json_decode($res->getBody()->getContents(), true);
 }
 
-function getCurrentDNSRecord() {
+function getCurrentDNSRecord($record) {
     $client = new Client();
 
-    $uri = getenv('CLOUDFLARE_API_URI') . '/zones/' . getenv('CLOUDFLARE_ZONE_ID') . '/dns_records?type=A&name=' . getenv('CLOUDFLARE_DNS_NAME') . '&order=type&direction=desc&match=all';
+    $uri = getenv('CLOUDFLARE_API_URI') . '/zones/' . getenv('CLOUDFLARE_ZONE_ID') . '/dns_records?type=A&name=' . $record . '&order=type&direction=desc&match=all';
     $options = [
         'headers' => [
 	    'Content-Type'  => 'application/json',
@@ -38,10 +57,11 @@ function getCurrentDNSRecord() {
 
     $res = $client->request('GET', $uri, $options);
 
+
     return json_decode($res->getBody()->getContents(), true);
 }
 
-function updateDNSRecord($publicIP, $id) {
+function updateDNSRecord($publicIP, $id, $record, $isProxy) {
     $client = new Client();
 
     $uri = getenv('CLOUDFLARE_API_URI') . '/zones/' . getenv('CLOUDFLARE_ZONE_ID') . '/dns_records/' . $id;
@@ -53,10 +73,10 @@ function updateDNSRecord($publicIP, $id) {
         ],
         'json' => [
             'type'    => 'A',
-            'name'    => getenv('CLOUDFLARE_DNS_NAME'),
+            'name'    => $record,
 	    'content' => $publicIP,
 	    'ttl'     => 1,
-	    'proxied' => true,
+	    'proxied' => $isProxy,
         ]
     ];
 

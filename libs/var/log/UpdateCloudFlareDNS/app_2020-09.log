@@ -1,0 +1,14 @@
+[2020-09-07 11:23:40][INFO]> Get Public IP: {
+  "origin": "14.3.234.36"
+}
+ : [] : []
+[2020-09-07 11:26:57][DEBUG]> Get Public IP: {
+  "origin": "14.3.234.36"
+}
+ : [] : []
+[2020-09-07 11:26:58][DEBUG]> Get Current DNS Record: Array : [] : []
+[2020-09-07 11:27:15][DEBUG]> Get Public IP: {
+  "origin": "14.3.234.36"
+}
+ : [] : []
+[2020-09-07 11:27:15][DEBUG]> Get Current DNS Record: {"result":[{"id":"f7c099d0ad51abc3944d51ca21dfe16f","zone_id":"545559127cc1170621f94b27853798e0","zone_name":"sorarinu.dev","name":"sorarinu.dev","type":"A","content":"14.3.234.36","proxiable":true,"proxied":true,"ttl":1,"locked":false,"meta":{"auto_added":false,"managed_by_apps":false,"managed_by_argo_tunnel":false,"source":"primary"},"created_on":"2020-09-06T13:03:37.079192Z","modified_on":"2020-09-06T13:03:37.079192Z"}],"success":true,"errors":[],"messages":[],"result_info":{"page":1,"per_page":20,"count":1,"total_count":1,"total_pages":1}} : [] : []
