@@ -8,7 +8,6 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 $records = [
-    'sorarinu.dev'   => true,
     'tv.sorarinu.dev'   => true,
     'home.sorarinu.dev' => false,
     'krishna-api.sorarinu.dev' => true,
